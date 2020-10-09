@@ -1,0 +1,30 @@
+version: 0.1
+# This file is required because I'm unable get the container to persist
+# its environment configuration to /etc/docker/registry/config.yml
+# This is stops me from deleting stuff because we reference /etc/docker/registry.config.yml
+# when we call garbage collection (when cleaning up loose stuff)
+# ```bash
+# # docker exec -it /bin/registry garbage-collect --dry-run /etc/docker/registry/config.yml
+# docker exec -it /bin/registry garbage-collect /etc/docker/registry/config.yml
+# ```
+
+# https://azizunsal.github.io/blog/post/delete-images-from-private-docker-registry/
+log:
+  fields:
+    service: registry
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:
+    enabled: true
+http:
+  addr: :5000
+  headers:
+    X-Content-Type-Options: [nosniff]
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
